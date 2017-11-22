@@ -1,0 +1,20 @@
+<div class="card-container deploy-context-container">
+  <div class="bloc">
+    <div class="bloc-popin">
+      <div class="align-left">
+        <strong><%- T("console.metrics.deployment") %></strong><br>
+        <% if(commitId){ %>
+          <strong>Commit</strong>
+        <%}%>
+      </div>
+      <div class="align-right">
+        <span class="commit">#<%- deployNumber %></span><br>
+        <% if(commitId){ %>
+          <span class="commit">#<%- commitId %></span>
+        <%}%>
+      </div>
+    </div>
+  </div>
+
+  <div class="deploy-context" data-deploy-number="<%- deployNumber %>"></div>
+</div>
