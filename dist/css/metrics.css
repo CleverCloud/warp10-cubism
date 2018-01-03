@@ -184,7 +184,8 @@
 .metrics-advanced-view .dropdown-selector .dropdown .dropdown-body {
   position: absolute;
 }
-body div.flatpickr-calendar {
+body div.flatpickr-calendar,
+body div.flatpickr-calendar .flatpickr-rContainer {
   width: 210px;
 }
 body div.flatpickr-calendar .flatpickr-current-month {
