@@ -44,6 +44,7 @@ module.exports = (() => {
     this.pointsRange = null;
     this.state = "INITIAL";
     this.unit = settings.unit || null;
+    this.formatters = settings.formatters || {}; // an object of functions formatting the data
   };
 
   Plugin.prototype.setGts = function(gts){ this.gts = gts; return this; };

@@ -25,6 +25,8 @@
  * You also have to modify files in src/plugins/metrics/instances/ to enable a plugin for an instance type
  */
 
+const formatValues = require("../formatValues.js");
+
 module.exports = (() => {;
   const _ = require("lodash");
   const plugins = {};
@@ -39,6 +41,9 @@ module.exports = (() => {;
     unit: "% of load",
     transformers: {
       onNewPoints: gtss => _.map(gtss, gts => [gts[0], 100 - gts[1]])
+    },
+    formatters: {
+      formatValue: (value) => `${value}%`
     }
   };
 
@@ -48,7 +53,10 @@ module.exports = (() => {;
     serverDelay: 10e3,
     key: "mem.{}",
     subkeys: [{key: "used"}],
-    unit: "Bytes"
+    unit: "Bytes",
+    formatters: {
+      formatValue: formatValues.formatBytes
+    }
   };
 
   plugins.net = {
@@ -70,6 +78,12 @@ module.exports = (() => {;
           _.map(v, (kv) => [kv[0], -kv[1]]) :
           v;
       }
+    },
+    formatters: {
+      formatValue: (value) => {
+        const ret = formatValues.formatBytes(value);
+        return `${ret}/s`;
+      }
     }
   };
 
@@ -78,7 +92,10 @@ module.exports = (() => {;
     displayName: "Requests per second",
     serverDelay: 60e3,
     key: "apache.{}",
-    subkeys: [{key: "ReqPerSec"}]
+    subkeys: [{key: "ReqPerSec"}],
+    formatters: {
+      formatValue: formatValues.formatSeconds,
+    }
   };
 
   plugins.apache_workers = {
@@ -104,6 +121,9 @@ module.exports = (() => {;
         const bucketize = plugin.bucketizeWarpscript(map);
         return plugin.interpolateWarpscript(bucketize);
       }
+    },
+    formatters: {
+      formatValue: formatValues.formatSeconds,
     }
   };
 
@@ -128,7 +148,10 @@ module.exports = (() => {;
     }, {
       key: "statsd-jvm-profiler_nonheap_total_used.value",
       displayName: "Off heap"
-    }]
+    }],
+    formatters: {
+      formatValue: formatValues.formatBytes
+    }
   }
 
   return plugins;
