@@ -6,15 +6,20 @@ module.exports = (() => {
 
 this["Templates"]["Metrics.cubism-context"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<div class="metrics-context" data-plugin-id="' +
 __e( pluginId ) +
-'">\n  <div class="metrics-context-header">\n    <h4>' +
+'">\n  <div class="metrics-context-header">\n    <h4>\n      ' +
 __e( pluginName ) +
-' (' +
+'\n      ';
+ if(pluginUnit){ ;
+__p += '\n        (' +
 __e( pluginUnit ) +
-')</h4>\n  </div>\n  <div class="metrics-context-body"></div>\n</div>\n';
+')\n      ';
+};
+__p += '\n    </h4>\n  </div>\n  <div class="metrics-context-body"></div>\n</div>\n';
 
 }
 return __p

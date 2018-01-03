@@ -1,6 +1,11 @@
 <div class="metrics-context" data-plugin-id="<%- pluginId %>">
   <div class="metrics-context-header">
-    <h4><%- pluginName %> (<%- pluginUnit %>)</h4>
+    <h4>
+      <%- pluginName %>
+      <% if(pluginUnit){ %>
+        (<%- pluginUnit %>)
+      <%}%>
+    </h4>
   </div>
   <div class="metrics-context-body"></div>
 </div>
