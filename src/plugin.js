@@ -43,7 +43,7 @@ module.exports = (() => {
     this.fillMissingPoints = _.has(settings, 'fillMissingPoints') ? settings.fillMissingPoints : true;
     this.pointsRange = null;
     this.state = "INITIAL";
-    this.unit = settings.unit;
+    this.unit = settings.unit || null;
   };
 
   Plugin.prototype.setGts = function(gts){ this.gts = gts; return this; };
