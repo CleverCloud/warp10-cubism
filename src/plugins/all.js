@@ -36,6 +36,7 @@ module.exports = (() => {;
     key: "fast_cpu.{}",
     subkeys: [{key: "usage_idle"}],
     labels: { cpu: 'cpu-total' },
+    unit: "% of utilization",
     transformers: {
       onNewPoints: gtss => _.map(gtss, gts => [gts[0], 100 - gts[1]])
     }
@@ -46,7 +47,8 @@ module.exports = (() => {;
     displayName: "RAM",
     serverDelay: 10e3,
     key: "mem.{}",
-    subkeys: [{key: "used"}]
+    subkeys: [{key: "used"}],
+    unit: "Bytes"
   };
 
   plugins.net = {
@@ -55,6 +57,7 @@ module.exports = (() => {;
     serverDelay: 60e3,
     key: "~net.({})",
     subkeys: [{key: "bytes_sent", displayName: "Net Out"}, {key: "bytes_recv", displayName: "Net In"}],
+    unit: "Bytes / second",
     transformers: {
       onGetWarpscript: (warpscript, plugin) => {
         const derive = plugin.mapperWarpscript(warpscript, "rate", 1, 0, 0);
@@ -109,7 +112,8 @@ module.exports = (() => {;
     displayName: "GC residency",
     serverDelay: 60e3,
     key: "statsd.{}",
-    subkeys: [{key: "rts_gc_current_bytes_used.value"}]
+    subkeys: [{key: "rts_gc_current_bytes_used.value"}],
+    unit: "Bytes"
   }
 
   plugins.java_memory_used = {
@@ -117,6 +121,7 @@ module.exports = (() => {;
     displayName: "Allocated Memory",
     serverDelay: 60e3,
     key: "~jvm.({})",
+    unit: "Bytes",
     subkeys: [{
       key: "statsd-jvm-profiler_heap_total_used.value",
       displayName: "Total heap"

@@ -101,6 +101,7 @@ module.exports = (() => {
         const $plugin = Templates["Metrics.cubism-context"]({
           pluginId: plugin.getId(),
           pluginName: plugin.getDisplayName(),
+          pluginUnit: plugin.getUnit(),
           T: state.Translations,
         });
 

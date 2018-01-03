@@ -12,7 +12,9 @@ __p += '<div class="metrics-context" data-plugin-id="' +
 __e( pluginId ) +
 '">\n  <div class="metrics-context-header">\n    <h4>' +
 __e( pluginName ) +
-'</h4>\n  </div>\n  <div class="metrics-context-body"></div>\n</div>\n';
+' (' +
+__e( pluginUnit ) +
+')</h4>\n  </div>\n  <div class="metrics-context-body"></div>\n</div>\n';
 
 }
 return __p

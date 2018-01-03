@@ -43,6 +43,7 @@ module.exports = (() => {
     this.fillMissingPoints = _.has(settings, 'fillMissingPoints') ? settings.fillMissingPoints : true;
     this.pointsRange = null;
     this.state = "INITIAL";
+    this.unit = settings.unit;
   };
 
   Plugin.prototype.setGts = function(gts){ this.gts = gts; return this; };
@@ -65,6 +66,7 @@ module.exports = (() => {
   Plugin.prototype.getRawServerDelay = function() { return this.serverDelay; };
   Plugin.prototype.getStep = function() { return this.step; };
   Plugin.prototype.getState = function() { return this.state; };
+  Plugin.prototype.getUnit = function() { return this.unit; };
   Plugin.prototype.getToBeDeletedDeployment = function(deployNumber) {
     return this.toBeDeletedDeployments.find(d => d === parseInt(deployNumber));
   };
