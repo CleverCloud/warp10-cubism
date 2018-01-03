@@ -36,7 +36,7 @@ module.exports = (() => {;
     key: "fast_cpu.{}",
     subkeys: [{key: "usage_idle"}],
     labels: { cpu: 'cpu-total' },
-    unit: "% of utilization",
+    unit: "% of load",
     transformers: {
       onNewPoints: gtss => _.map(gtss, gts => [gts[0], 100 - gts[1]])
     }
