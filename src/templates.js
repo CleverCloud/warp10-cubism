@@ -31,7 +31,7 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<div class="card-container deploy-context-container">\n  <div class="bloc">\n    <div class="bloc-popin">\n      <div class="align-left">\n        <strong>' +
-__e( T("console.metrics.deployment") ) +
+__e( T("metrics.deployment") ) +
 '</strong><br>\n        ';
  if(commitId){ ;
 __p += '\n          <strong>Commit</strong>\n        ';
