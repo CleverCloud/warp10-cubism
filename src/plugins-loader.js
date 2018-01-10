@@ -42,8 +42,7 @@ module.exports = (() => {
     const splitted = metric.split('.');
     return {
       id: "custom",
-      displayName: metric.replace(/\./g, ' '),
-      key: `${_.first(splitted)}.{}`,
+      key: `${_.first(splitted)}`,
       subkeys: [{key: splitted.slice(1).join('.')}]
     };
   };

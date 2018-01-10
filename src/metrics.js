@@ -65,7 +65,8 @@ module.exports = (() => {
           const pluginConfiguration = _.extend({}, conf, {
             app_id: state.app.id,
             token,
-            instances
+            instances,
+            Translations: state.Translations
           });
 
           const newPlugin = new Plugin(pluginConfiguration);

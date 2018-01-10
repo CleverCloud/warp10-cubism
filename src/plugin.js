@@ -4,12 +4,12 @@ module.exports = (() => {
   const Plugin = function(settings){
     const required = [
       "app_id",
-      "displayName",
       "instances",
       "key",
       "subkeys",
       "id",
-      "token"
+      "token",
+      "Translations"
     ];
 
     // We hope to have the name attribute
@@ -24,7 +24,6 @@ module.exports = (() => {
     }
 
     this.app_id = settings.app_id;
-    this.displayName = settings.displayName;
     this.clientDelay = settings.clientDelay || 1e3; // additional time the context waits to fetch metrics from the server
     this.gts = {}; // list of all the GTS, index is the instance_id
     this.instances = settings.instances; // list of instances to fetch
@@ -45,6 +44,7 @@ module.exports = (() => {
     this.state = "INITIAL";
     this.unit = settings.unit || null;
     this.formatters = settings.formatters || {}; // an object of functions formatting the data
+    this.Translations = settings.Translations;
   };
 
   Plugin.prototype.setGts = function(gts){ this.gts = gts; return this; };
@@ -63,11 +63,15 @@ module.exports = (() => {
   Plugin.prototype.getInstances = function() { return this.instances; };
   Plugin.prototype.getMaxPoints = function() { return this.maxPoints; };
   Plugin.prototype.getClientDelay = function() { return this.clientDelay; };
-  Plugin.prototype.getDisplayName = function() { return this.displayName; };
   Plugin.prototype.getRawServerDelay = function() { return this.serverDelay; };
   Plugin.prototype.getStep = function() { return this.step; };
   Plugin.prototype.getState = function() { return this.state; };
   Plugin.prototype.getUnit = function() { return this.unit; };
+  Plugin.prototype.getDisplayName = function() {
+    const subkeys = _.map(this.subkeys, "key").join('-');
+    const translationKey = `metrics.metric-${this.key}-${subkeys}`;
+    return this.Translations(translationKey);
+  };
   Plugin.prototype.getToBeDeletedDeployment = function(deployNumber) {
     return this.toBeDeletedDeployments.find(d => d === parseInt(deployNumber));
   };
@@ -143,7 +147,7 @@ module.exports = (() => {
     const rStart = start === "NOW" ? `${start}` : `'${start}'`;
     const rStop = typeof stop === "number" ? `${stop}` : `'${stop}'`;
 
-    const _key = this.key.replace(/{}/, this.getKeyFromSubkeys(this.subkeys));
+    const _key = this.getFullKey(this.key, this.subkeys);
 
     return `
     "${this.token}"
@@ -283,12 +287,19 @@ module.exports = (() => {
     return newValues.slice(removeCounter, length);
   };
 
-  Plugin.prototype.getKeyFromSubkeys = function(subkeys){
-    return _.chain(subkeys)
-      .flatten()
-      .map('key')
-      .value()
-      .join('|');
+  Plugin.prototype.getFullKey = function(key, subkeys){
+    if(subkeys.length === 0) {
+      return key;
+    } else if(subkeys.length === 1) {
+      return `${key}.${subkeys[0].key}`;
+    } else {
+      const formattedSubkeys = _.chain(subkeys)
+        .flatten()
+        .map('key')
+        .value()
+        .join('|');
+      return `~${key}.(${formattedSubkeys})`;
+    }
   };
 
   Plugin.prototype.cleanOldPoints = function(points){

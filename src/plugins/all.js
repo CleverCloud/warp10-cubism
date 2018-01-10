@@ -35,7 +35,7 @@ module.exports = (() => {;
     id: "cpu",
     displayName: "CPU",
     serverDelay: 10e3,
-    key: "fast_cpu.{}",
+    key: "fast_cpu",
     subkeys: [{key: "usage_idle"}],
     labels: { cpu: 'cpu-total' },
     unit: "% of load",
@@ -51,7 +51,7 @@ module.exports = (() => {;
     id: "mem",
     displayName: "RAM",
     serverDelay: 10e3,
-    key: "mem.{}",
+    key: "mem",
     subkeys: [{key: "used"}],
     unit: "Bytes",
     formatters: {
@@ -63,7 +63,7 @@ module.exports = (() => {;
     id: "net",
     displayName: "Network",
     serverDelay: 60e3,
-    key: "~net.({})",
+    key: "net",
     subkeys: [{key: "bytes_sent", displayName: "Net Out"}, {key: "bytes_recv", displayName: "Net In"}],
     unit: "Bytes / second",
     transformers: {
@@ -91,7 +91,7 @@ module.exports = (() => {;
     id: "apache_req_per_sec",
     displayName: "Requests per second",
     serverDelay: 60e3,
-    key: "apache.{}",
+    key: "apache",
     subkeys: [{key: "ReqPerSec"}],
     formatters: {
       formatValue: formatValues.formatSeconds,
@@ -102,7 +102,7 @@ module.exports = (() => {;
     id: "apache_workers",
     displayName: "Workers",
     serverDelay: 60e3,
-    key: "~apache.({})",
+    key: "apache",
     subkeys: [
       {key: "IdleWorkers", displayName: "Idle"},
       {key: "BusyWorkers", displayName: "Busy"}
@@ -113,7 +113,7 @@ module.exports = (() => {;
     id: "haskell_wai_request_count",
     displayName: "Requests per second",
     serverDelay: 60e3,
-    key: "statsd.{}",
+    key: "statsd",
     subkeys: [{key: "wai_request_count.value"}],
     transformers: {
       onGetWarpscript: (ws, plugin) => {
@@ -131,7 +131,7 @@ module.exports = (() => {;
     id: "haskell†_memory_used",
     displayName: "GC residency",
     serverDelay: 60e3,
-    key: "statsd.{}",
+    key: "statsd",
     subkeys: [{key: "rts_gc_current_bytes_used.value"}],
     unit: "Bytes"
   }
@@ -140,7 +140,7 @@ module.exports = (() => {;
     id: "java_memory_used",
     displayName: "Allocated Memory",
     serverDelay: 60e3,
-    key: "~jvm.({})",
+    key: "jvm",
     unit: "Bytes",
     subkeys: [{
       key: "statsd-jvm-profiler_heap_total_used.value",
