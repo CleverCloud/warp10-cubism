@@ -1,5 +1,9 @@
 const formatBytes = (value) => {
-  const val = parseInt(value);
+  let val = parseInt(value);
+  if(val < 0) {
+    val *= -1;
+  }
+
   if(val < 1024) {
     return `${val.toString()}B`
   } else if(val < Math.pow(1024, 2)) {
