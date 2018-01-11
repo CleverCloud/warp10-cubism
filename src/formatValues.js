@@ -5,13 +5,16 @@ const formatBytes = (value) => {
   }
 
   if(val < 1024) {
-    return `${val.toString()}B`
+    return `${val.toString()}B`;
   } else if(val < Math.pow(1024, 2)) {
-    return `${val.toString()}KiB`;
+    const divided = (val / Math.pow(1024, 1)).toFixed(1);
+    return `${divided.toString()}KiB`;
   } else if(val < Math.pow(2043, 3)) {
-    return `${val.toString()}MiB`;
+    const divided = (val / Math.pow(1024, 2)).toFixed(1);
+    return `${divided.toString()}MiB`;
   } else {
-    return `${val.toString()}GiB`;
+    const divided = (val / Math.pow(1024, 3)).toFixed(1);
+    return `${divided.toString()}GiB`;
   }
 };
 
