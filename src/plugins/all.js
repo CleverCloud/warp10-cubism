@@ -128,7 +128,7 @@ module.exports = (() => {;
   };
 
   plugins.haskell_memory_used = {
-    id: "haskell†_memory_used",
+    id: "haskell_memory_used",
     displayName: "GC residency",
     serverDelay: 60e3,
     key: "statsd",
