@@ -3,10 +3,9 @@
  * You can find in this file every plugins metrics supports
  *
  * To add a plugin, follow the few plugins at the bottom.
- * A plugin must have a few defined keys: id, displayName, key, subkeys
+ * A plugin must have a few defined keys: id, key, subkeys
  *
  * id: a uniq id for the plugin. no spaces.
- * displayName: the name of the plugin display in the metrics pane
  * key: the warp10 key you use to query. Imagine that you want all statsd prefixed data, this will be: statsd.{}
  ****** the {} symbol here is then replaced by the constructed subkeys (right below). You can also use regex:
  ****** ~statsd.({}) Here the {} will be replaced by a "subkey1|subkey2" to match the regex format.
@@ -33,7 +32,6 @@ module.exports = (() => {;
 
   plugins.cpu = {
     id: "cpu",
-    displayName: "CPU",
     serverDelay: 10e3,
     key: "fast_cpu",
     subkeys: [{key: "usage_idle"}],
@@ -49,7 +47,6 @@ module.exports = (() => {;
 
   plugins.ram = {
     id: "mem",
-    displayName: "RAM",
     serverDelay: 10e3,
     key: "mem",
     subkeys: [{key: "used"}],
@@ -61,10 +58,9 @@ module.exports = (() => {;
 
   plugins.net = {
     id: "net",
-    displayName: "Network",
     serverDelay: 60e3,
     key: "net",
-    subkeys: [{key: "bytes_sent", displayName: "Net Out"}, {key: "bytes_recv", displayName: "Net In"}],
+    subkeys: [{key: "bytes_sent"}, {key: "bytes_recv"}],
     unit: "Bytes / second",
     transformers: {
       onGetWarpscript: (warpscript, plugin) => {
@@ -89,7 +85,6 @@ module.exports = (() => {;
 
   plugins.apache_req_per_sec = {
     id: "apache_req_per_sec",
-    displayName: "Requests per second",
     serverDelay: 60e3,
     key: "apache",
     subkeys: [{key: "ReqPerSec"}],
@@ -100,18 +95,16 @@ module.exports = (() => {;
 
   plugins.apache_workers = {
     id: "apache_workers",
-    displayName: "Workers",
     serverDelay: 60e3,
     key: "apache",
     subkeys: [
-      {key: "IdleWorkers", displayName: "Idle"},
-      {key: "BusyWorkers", displayName: "Busy"}
+      {key: "IdleWorkers"},
+      {key: "BusyWorkers"}
     ]
   };
 
   plugins.haskell_wai_request_count = {
     id: "haskell_wai_request_count",
-    displayName: "Requests per second",
     serverDelay: 60e3,
     key: "statsd",
     subkeys: [{key: "wai_request_count.value"}],
@@ -129,7 +122,6 @@ module.exports = (() => {;
 
   plugins.haskell_memory_used = {
     id: "haskell_memory_used",
-    displayName: "GC residency",
     serverDelay: 60e3,
     key: "statsd",
     subkeys: [{key: "rts_gc_current_bytes_used.value"}],
@@ -138,16 +130,13 @@ module.exports = (() => {;
 
   plugins.java_memory_used = {
     id: "java_memory_used",
-    displayName: "Allocated Memory",
     serverDelay: 60e3,
     key: "jvm",
     unit: "Bytes",
     subkeys: [{
-      key: "statsd-jvm-profiler_heap_total_used.value",
-      displayName: "Total heap"
+      key: "statsd-jvm-profiler_heap_total_used.value"
     }, {
-      key: "statsd-jvm-profiler_nonheap_total_used.value",
-      displayName: "Off heap"
+      key: "statsd-jvm-profiler_nonheap_total_used.value"
     }],
     formatters: {
       formatValue: formatValues.formatBytes

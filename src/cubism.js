@@ -223,10 +223,20 @@ module.exports = (() => {
   };
 
   $Cubism.getPoints = (state, context, instance, plugin, subkey) => {
-    const graphName = (subkey.displayName ?
-      `${subkey.displayName} - ` :
-      ''
-    ) + instance.displayName;
+    let graphName = `${instance.displayName}`;
+
+    // If there is only one subkey, the plugin display name will just say the same thing
+    // than the subkey one
+    if(plugin.getSubkeys().length > 1) {
+      const translationKey = `metrics.metric-${plugin.key}.${subkey.key}`;
+      let translation = state.Translations(translationKey);
+      // if there is no translation
+      if(translation === translationKey) {
+        translation = subkey.key;
+      }
+
+      graphName += ` - ${translation}`;
+    }
 
     const metrics = context.metric(function(start, stop, step, callback) {
       if(plugin.getToBeDeletedDeployment(instance.deployNumber)){
