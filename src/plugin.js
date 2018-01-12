@@ -42,7 +42,6 @@ module.exports = (() => {
     this.fillMissingPoints = _.has(settings, 'fillMissingPoints') ? settings.fillMissingPoints : true;
     this.pointsRange = null;
     this.state = "INITIAL";
-    this.unit = settings.unit || null;
     this.formatters = settings.formatters || {}; // an object of functions formatting the data
     this.Translations = settings.Translations;
   };
@@ -66,7 +65,6 @@ module.exports = (() => {
   Plugin.prototype.getRawServerDelay = function() { return this.serverDelay; };
   Plugin.prototype.getStep = function() { return this.step; };
   Plugin.prototype.getState = function() { return this.state; };
-  Plugin.prototype.getUnit = function() { return this.unit; };
   Plugin.prototype.getDisplayName = function() {
     const subkeys = _.map(this.subkeys, "key").join('-');
     const translationKey = `metrics.metric-${this.key}-${subkeys}`;
