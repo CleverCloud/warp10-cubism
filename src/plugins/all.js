@@ -138,5 +138,19 @@ module.exports = (() => {;
     }
   }
 
+  plugins.java_memory_used_compat = {
+    id: "java_memory_used_compat",
+    serverDelay: 60e3,
+    key: "jvm",
+    subkeys: [{
+      key: "statsd-jvm-profiler_heap_total_used.value"
+    }, {
+      key: "statsd-jvm-profiler_nonheap_total_used.value"
+    }],
+    formatters: {
+      formatValue: formatValues.formatBytes
+    }
+  }
+
   return plugins;
 })();
