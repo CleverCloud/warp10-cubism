@@ -199,26 +199,31 @@ module.exports = (() => {
 
   Plugin.prototype.newPoints = function(gtss){
     const pluginGtss = gtss[this.id];
-    if(this.state === "INITIAL" && pluginGts){
-      this.state = "WITH_POINTS"
-    }
 
     if(pluginGtss){
       _.each(pluginGtss, gts => {
         const key = gts.c.replace(_.first(gts.c.split('.')) + '.', '');
-        // This if is mostly to avoid useless allocation when we don't have a transformer
-        if(this.transformers.onNewPoints){
-          const _gts = _.extend({}, gts, {
-            v: this.transformers.onNewPoints(gts.v, key)
-          });
-          this.storePoints(_gts, key);
-        } else {
-          this.storePoints(gts, key);
+        const subkey = gts.c.replace(`${this.key}\.`, '');
+        const hasSubkey = this.subkeys.find(s => s.key === subkey);
+        if(hasSubkey !== null) {
+          // This if is mostly to avoid useless allocation when we don't have a transformer
+          if(this.transformers.onNewPoints){
+            const _gts = _.extend({}, gts, {
+              v: this.transformers.onNewPoints(gts.v, key)
+            });
+            this.storePoints(_gts, key);
+          } else {
+            this.storePoints(gts, key);
+          }
         }
       });
 
       const toBeDeletedDeployments = this.getDeployNumbersToClean(this.gts);
       toBeDeletedDeployments.forEach(deployNumber => this.addDeploymentToBeDeleted(deployNumber));
+    }
+
+    if(_.keys(this.gts).length > 0) {
+      this.state = "WITH_POINTS";
     }
 
     return this;
