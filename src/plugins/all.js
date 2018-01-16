@@ -129,9 +129,9 @@ module.exports = (() => {;
     serverDelay: 60e3,
     key: "jvm",
     subkeys: [{
-      key: "statsd-jvm-profiler_heap_total_used.value"
+      key: "metrics_jvm_heapMemoryUsage_committed.value"
     }, {
-      key: "statsd-jvm-profiler_nonheap_total_used.value"
+      key: "metrics_jvm_heapMemoryUsage_used.value"
     }],
     formatters: {
       formatValue: formatValues.formatBytes
