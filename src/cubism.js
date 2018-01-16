@@ -244,8 +244,13 @@ module.exports = (() => {
       }
 
       const allPoints = plugin.getGts(instance.id, subkey.key);
+      const $context = $Cubism.getContextSelector(state, instance.deployNumber, plugin);
       if(!allPoints){
+        // hide the context until we have points
+        $context.hide();
         return callback(new Error("data not available"));
+      } else {
+        $context.show();
       }
 
       // Get an enclosing range of values
@@ -326,10 +331,15 @@ module.exports = (() => {
       });
   };
 
+  $Cubism.getContextSelector = (state, deployNumber, plugin) => {
+    const selector = `[data-deploy-number="${deployNumber}"] [data-plugin-id="${plugin.getId()}"]`;
+    return state.$container.find(selector);
+  };
+
   $Cubism.removeContext = (state, context, deployNumber, plugin) => {
     context.stop();
-    const selector = `[data-deploy-number="${deployNumber}"] [data-plugin-id="${plugin.getId()}"]`;
-    state.$container.find(selector).attr('status', 'to-be-deleted');
+    const $context = $Cubism.getContextSelector(state, deployNumber, plugin);
+    $context.attr('status', 'to-be-deleted');
 
     const allContextsInDeployment = state.$container.find(`[data-deploy-number="${deployNumber}"] [data-plugin-id]`);
     const everyToBeDeleted = _.every(allContextsInDeployment, c => $(c).attr('status') === 'to-be-deleted');
