@@ -199,7 +199,7 @@ module.exports = (() => {
 
   Plugin.prototype.newPoints = function(gtss){
     const pluginGtss = gtss[this.id];
-    if(this.state === "INITIAL"){
+    if(this.state === "INITIAL" && pluginGts){
       this.state = "WITH_POINTS"
     }
 
