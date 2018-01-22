@@ -157,9 +157,11 @@ module.exports = (() => {
   };
 
   $Cubism.onContextFocus = (context, $context, i) => {
-    d3
-      .selectAll($context.find(".value").selector)
-      .style("right", i === null ? null : (context.size() - i).toString() + "px");
+    _.each($context.find(".value"), elem => {
+      d3
+        .select(elem)
+        .style("right", i === null ? null : (context.size() - i).toString() + "px");
+    });
   };
 
   $Cubism.drawContext = (state, deployNumber, plugin) => {

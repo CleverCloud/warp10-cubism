@@ -18,7 +18,7 @@
     "baconjs": "0.7.94",
     "cubism": "https://github.com/CleverCloud/cubism.git#1.6.1",
     "d3": "3.x",
-    "jquery": "^2.2.3",
+    "jquery": "^3.3.1",
     "lodash": "^4.17.4"
   }
 }
