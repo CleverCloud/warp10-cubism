@@ -157,12 +157,17 @@ module.exports = (() => {
 
   Plugin.prototype.getWarpscript = function(start, stop, includeInstances = true) {
     const realStart = this.getRealStart(start);
+
     this.setBucketizeInterval(this.computeBucketizeInterval(realStart, stop));
     const ws = this.getFetchWarpscript(realStart, stop, includeInstances);
 
+    const bucketizeStop = start !== "NOW" ?
+      (new Date(stop)).getTime() * 1e3 :
+      0;
+
     return this.transformers.onGetWarpscript ?
       this.transformers.onGetWarpscript(ws, this) :
-      this.interpolateWarpscript(this.bucketizeWarpscript(ws, "mean", 0, this.getBucketizeInterval(), 0));
+      this.interpolateWarpscript(this.bucketizeWarpscript(ws, "mean", bucketizeStop, this.getBucketizeInterval(), 0));
   };
 
   Plugin.prototype.bucketizeWarpscript = (ws, bucketizer, lastbucket, bucketspan, bucketcount) => {
