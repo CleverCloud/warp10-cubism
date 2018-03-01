@@ -25,24 +25,15 @@
  */
 
 const formatValues = require("../formatValues.js");
+const _ = require("lodash");
+
+const cpu = require("./cpu.js");
 
 module.exports = (() => {;
   const _ = require("lodash");
-  const plugins = {};
+  let plugins = {};
 
-  plugins.cpu = {
-    id: "cpu",
-    serverDelay: 10e3,
-    key: "fast_cpu",
-    subkeys: [{key: "usage_idle"}],
-    labels: { cpu: 'cpu-total' },
-    transformers: {
-      onNewPoints: gtss => _.map(gtss, gts => [gts[0], 100 - gts[1]])
-    },
-    formatters: {
-      formatValue: (value) => `${value}%`
-    }
-  };
+  plugins = _.extend(plugins, cpu);
 
   plugins.ram = {
     id: "mem",
