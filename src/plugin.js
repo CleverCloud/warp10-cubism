@@ -1,6 +1,9 @@
 module.exports = (() => {
   const _ = require("lodash");
 
+  // merge points when we try to view more than 3 days;
+  const MERGE_POINTS_ZOOM_SECONDS = 3600 * 24 * 3;
+
   const Plugin = function(settings){
     const required = [
       "app_id",
@@ -37,8 +40,6 @@ module.exports = (() => {
     this.token = settings.token; // Token to read metrics
     this.transformers = settings.transformers || {}; // an object of function transforming the data
     this.step = settings.step || 1e3; // Delay the client refreshes
-    // value for bucketize interval. It's updated each time we fetch metrics with a different start and stop time
-    this.bucketizeInterval = 1e6;
     this.fillMissingPoints = _.has(settings, 'fillMissingPoints') ? settings.fillMissingPoints : true;
     this.pointsRange = null;
     this.state = "INITIAL";
@@ -55,10 +56,8 @@ module.exports = (() => {
   Plugin.prototype.setToken = function(token) { this.token = token; return this; };
   Plugin.prototype.setClientDelay = function(delay) { this.clientDelay = delay; return this; };
   Plugin.prototype.setServerDelay = function(delay) { this.serverDelay = delay; return this; };
-  Plugin.prototype.setBucketizeInterval = function(interval) { this.bucketizeInterval = interval; return this; };
   Plugin.prototype.setPointsRange = function(start, stop) { this.pointsRange = stop.getTime() - start.getTime(); return this; };
   Plugin.prototype.addDeploymentToBeDeleted = function(deployNumber) { this.toBeDeletedDeployments.push(parseInt(deployNumber)); return this; };
-  Plugin.prototype.getBucketizeInterval = function() { return this.bucketizeInterval; };
   Plugin.prototype.getInstances = function() { return this.instances; };
   Plugin.prototype.getMaxPoints = function() { return this.maxPoints; };
   Plugin.prototype.getClientDelay = function() { return this.clientDelay; };
@@ -158,16 +157,26 @@ module.exports = (() => {
   Plugin.prototype.getWarpscript = function(start, stop, includeInstances = true) {
     const realStart = this.getRealStart(start);
 
-    this.setBucketizeInterval(this.computeBucketizeInterval(realStart, stop));
-    const ws = this.getFetchWarpscript(realStart, stop, includeInstances);
-
     const bucketizeStop = start !== "NOW" ?
       (new Date(stop)).getTime() * 1e3 :
       0;
 
-    return this.transformers.onGetWarpscript ?
-      this.transformers.onGetWarpscript(ws, this) :
-      this.interpolateWarpscript(this.bucketizeWarpscript(ws, "mean", bucketizeStop, this.getBucketizeInterval(), 0));
+    const shouldMerge = this.shouldMerge(start, stop);
+
+    const fetchWarpscript = this.getFetchWarpscript(realStart, stop, includeInstances);
+    const mergedWarpscript = shouldMerge ?
+      this.merge(fetchWarpscript) :
+      fetchWarpscript;
+
+    const interpolatedWarpscript = this.transformers.onGetWarpscript ?
+      this.transformers.onGetWarpscript(mergedWarpscript, this) :
+      this.interpolateWarpscript(this.bucketizeWarpscript(mergedWarpscript, "mean", bucketizeStop, this.getBucketizeInterval(start, stop), 0));
+
+    if(!shouldMerge){
+      return this.deleteGTSWhenNotEnoughPoints(interpolatedWarpscript, 1);
+    } else {
+      return interpolatedWarpscript;
+    }
   };
 
   Plugin.prototype.bucketizeWarpscript = (ws, bucketizer, lastbucket, bucketspan, bucketcount) => {
@@ -200,6 +209,46 @@ module.exports = (() => {
       ${constant} mapper.mul ${prewindow} ${postwindow} ${occurences}
     ]
     MAP`;
+  };
+
+  Plugin.prototype.merge = (ws) => `${ws} MERGE`;
+
+  // This function takes a warpscript that returns a list of GTS
+  // and for each GTS, drop it or not if it only has one value
+  Plugin.prototype.deleteGTSWhenNotEnoughPoints = (ws, threshold = 1) => {
+    return `
+      0 'DROP_COUNT' STORE
+      <%
+        'GTS' STORE
+        $GTS
+
+        SIZE
+        'GTS_SIZE' STORE
+
+        $GTS
+        <% $GTS_SIZE ${threshold} <= %>
+        <%
+            DROP
+            $DROP_COUNT 1 +
+            'DROP_COUNT' STORE
+        %>
+        IFT
+      %>
+      'DROP_NOT_ENOUGH_DATA' STORE
+
+      ${ws}
+      'FETCHED_DATA' STORE
+
+      $FETCHED_DATA SIZE
+      'FETCHED_SIZE' STORE
+
+      $FETCHED_DATA
+      $DROP_NOT_ENOUGH_DATA
+      FOREACH
+
+      $FETCHED_SIZE $DROP_COUNT -
+      ->LIST
+    `;
   };
 
   Plugin.prototype.newPoints = function(gtss){
@@ -334,20 +383,55 @@ module.exports = (() => {
     this.gts = {};
   };
 
-  Plugin.prototype.computeBucketizeInterval = function(start, stop){
+  Plugin.prototype.getBucketizeInterval = function(start, stop){
+    const bucketizeDefault = 1e6; // 1s
     if(start === "NOW") {
-      return this.getBucketizeInterval();
+      return bucketizeDefault;
     }
 
     const mStart = moment(start);
     const mStop = moment(stop);
 
     if(!mStart.isValid() || !mStop.isValid()) {
-      return this.getBucketizeInterval();
+      return bucketizeDefault;
     }
 
     const diff = mStop.diff(mStart) / 1e3;
-    return Math.ceil(diff / this.getMaxPoints()) * 1e6;
+    // in seconds
+    const minute = 60;
+    const hour = 3600;
+    const day = hour * 24;
+    const month = day * 30;
+
+    if(diff <= (minute * 5)) {
+      return 1e6;
+    } else if(diff <= (minute * 15)) {
+      return 3e6;
+    } else if(diff <= hour) {
+      return 10e6;
+    } else if(diff <= (hour * 2)) {
+      return 30e6;
+    } else if(diff <= (hour * 3)) {
+      return 60e6;
+    } else if(diff <= (hour * 6)) {
+      return (minute * 2) * 1e6;
+    } else if(diff <= (hour * 12)) {
+      return (minute * 5) * 1e6;
+    } else if(diff <= day) {
+      return (minute * 10) * 1e6;
+    } else if(diff <= (day * 3)) {
+      return hour * 1e6;
+    } else if(diff <= (day * 7)) {
+      return (hour * 3) * 1e6
+    } else if(diff <= (day * 14)) {
+      return (hour * 6) * 1e6;
+    } else if(diff <= month) {
+      return (hour * 12) * 1e6;
+    } else if(diff <= (month * 3)) {
+      return day * 1e6;
+    } else {
+      return (day * 7) * 1e6;
+    }
   };
 
   Plugin.prototype.getRealStart = function(start){
@@ -417,6 +501,19 @@ module.exports = (() => {
         }
       });
   };
+
+  Plugin.prototype.shouldMerge = (start, stop) => {
+    if(start !== "NOW"){
+      const dateStart = new Date(start);
+      const dateStop = new Date(stop);
+      const diff = (dateStop.getTime() - dateStart.getTime()) / 1e3;
+      if(diff > MERGE_POINTS_ZOOM_SECONDS) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 
   return Plugin;
 
