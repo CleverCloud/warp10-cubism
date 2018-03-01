@@ -29,7 +29,7 @@ module.exports = (() => {
     this.instances = settings.instances; // list of instances to fetch
     this.toBeDeletedDeployments = [];
     this.key = settings.key; // key to match the GTS
-    this.labels = settings.label || {}; // labels to match GTS labels
+    this.labels = settings.labels || {}; // labels to match GTS labels
     this.maxPoints = null;
     this.id = settings.id;
     this.serverDelay = settings.serverDelay || 60e3; // delay to wait values from server in seconds
