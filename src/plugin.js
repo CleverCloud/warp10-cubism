@@ -172,7 +172,7 @@ module.exports = (() => {
       this.transformers.onGetWarpscript(mergedWarpscript, this) :
       this.interpolateWarpscript(this.bucketizeWarpscript(mergedWarpscript, "mean", bucketizeStop, this.getBucketizeInterval(start, stop), 0));
 
-    if(!shouldMerge){
+    if(!shouldMerge && start !== "NOW"){
       return this.deleteGTSWhenNotEnoughPoints(interpolatedWarpscript, 1);
     } else {
       return interpolatedWarpscript;
