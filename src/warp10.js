@@ -33,6 +33,7 @@ module.exports = (() => {
           try{
             ws.send(message);
           } catch(e){
+            console.log("Websocket: failed to send a message:", e);
             sink(new Bacon.Error(e));
           }
         });

@@ -100,6 +100,25 @@ module.exports = (() => {
       .map(true)
       .toProperty(false);
 
+    s_warp10
+      .filter(({ type }) => type === "WEBSOCKET_ERROR")
+      .map(".value")
+      .log("Websocket error");
+
+    s_warp10
+      .filter(({ type, value }) => type === "WEBSOCKET_STATE_CHANGED")
+      .onValue(({ value }) => {
+        if(value === 0) {
+          console.log("Websocket state: Connecting");
+        } else if(value === 1) {
+          console.log("Websocket state: Open");
+        } else if(value === 2) {
+          console.log("Websocket state: Closing");
+        } else if(value === 3) {
+          console.log("Websocket state: Closed");
+        }
+      });
+
     const s_websocketData = s_warp10
       .filter(({type}) => type === "WEBSOCKET_DATA");
 
