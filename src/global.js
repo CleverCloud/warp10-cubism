@@ -12,7 +12,7 @@ module.exports = (() => {
   };
 
   $Global.init = (state) => {
-    const s_plugins = state.$Metrics.initPlugins(state, PluginsLoader.globalPlugins(state.app));
+    const s_plugins = state.$Metrics.initPlugins(state, PluginsLoader.globalPlugins(state.resource));
     state.b_plugins.plug(s_plugins);
 
     const {s_firstPoints} = $Global.initStream(state);
@@ -98,6 +98,7 @@ module.exports = (() => {
       s_requestUnload: state.s_requestUnload,
       instances,
       plugins,
+      resource: state.resource,
       s_plugins: state.s_plugins,
       b_plugins: state.b_plugins,
       Translations: state.Translations

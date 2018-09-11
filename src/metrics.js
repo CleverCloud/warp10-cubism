@@ -15,7 +15,7 @@ module.exports = (() => {
       s_token: settings.s_token,
       s_instances: settings.s_instances,
       s_requestUnload: settings.s_requestUnload,
-      app: settings.app,
+      resource: settings.resource,
       owner: settings.owner,
       viewType: settings.viewType || "GLOBAL",
       $Metrics,
@@ -63,7 +63,7 @@ module.exports = (() => {
       try{
         return _.map(plugins, conf => {
           const pluginConfiguration = _.extend({}, conf, {
-            app_id: state.app.id,
+            resource_id: state.resource.id,
             token,
             instances,
             Translations: state.Translations
@@ -194,9 +194,11 @@ module.exports = (() => {
       .flatMapLatest(({token, instances}) => state.s_plugins.first().map(plugins => ({token, instances, plugins})))
       .map(({token, instances, plugins}) => {
         return _.map(plugins, plugin => {
-          const _instances = _.uniqBy(plugin.getInstances().concat(instances), i => i.id);
+          if(state.resource.type === "application") {
+            const _instances = _.uniqBy(plugin.getInstances().concat(instances), i => i.id);
+            plugin.setInstances(_instances);
+          }
           return plugin
-            .setInstances(_instances)
             .setToken(token);
         });
       })

@@ -6,7 +6,7 @@ module.exports = (() => {
 
   const Plugin = function(settings){
     const required = [
-      "app_id",
+      "resource_id",
       "instances",
       "key",
       "subkeys",
@@ -26,7 +26,7 @@ module.exports = (() => {
       throw new Error(`Can't have a space in plugin's id for plugin ${settings.id}`);
     }
 
-    this.app_id = settings.app_id;
+    this.resource_id = settings.resource_id;
     this.clientDelay = settings.clientDelay || 1e3; // additional time the context waits to fetch metrics from the server
     this.gts = {}; // list of all the GTS, index is the instance_id
     this.instances = settings.instances; // list of instances to fetch
@@ -82,7 +82,11 @@ module.exports = (() => {
     // by warp10
     return this.getRawServerDelay() + 10e3;
   };
-  Plugin.prototype.getGts = function(instanceId, subkey){
+  Plugin.prototype.getGts = function(resourceType, instanceId, subkey){
+    if(resourceType === "addon" && !instanceId) {
+      instanceId = _.first(_.keys(this.gts));
+    }
+
     if(!instanceId && !subkey){
       return this.gts;
     }
@@ -128,10 +132,10 @@ module.exports = (() => {
     }
 
     let labels = _.extend({}, _.clone(this.labels), {
-      'app_id': `=${this.app_id}`
+      'app_id': `=${this.resource_id}`
     });
 
-    if(includeInstances) {
+    if(includeInstances && this.instances.length > 0) {
       labels = _.extend({}, labels, {
         'host': this.getInstancesLabel(this.instances)
       });

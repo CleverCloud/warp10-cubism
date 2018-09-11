@@ -16,16 +16,16 @@ module.exports = (() => {
     return instancePlugins;
   };
 
-  Loader.globalPlugins = (app) => {
-    return Loader.loadPluginConfiguration(Loader.loadInstancePlugins(app).global);
+  Loader.globalPlugins = (resource) => {
+    return Loader.loadPluginConfiguration(Loader.loadInstancePlugins(resource).global);
   };
 
-  Loader.advancedPlugins = (app) => {
-    return Loader.loadPluginConfiguration(Loader.loadInstancePlugins(app).advanced);
+  Loader.advancedPlugins = (resource) => {
+    return Loader.loadPluginConfiguration(Loader.loadInstancePlugins(resource).advanced);
   };
 
-  Loader.getInstanceType = (app) => {
-    return app.instanceType || app.instance.type;
+  Loader.getInstanceType = (resource) => {
+    return resource.instanceType;
   };
 
   Loader.loadPluginConfiguration = (plugins) => {

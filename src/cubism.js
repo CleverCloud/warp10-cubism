@@ -10,6 +10,8 @@ module.exports = (() => {
   const b_contexts = new Bacon.Bus();
   const s_contexts = b_contexts.toProperty([]);
 
+  const DEFAULT_DEPLOYMENT_NUMBER = 0;
+
   s_contexts.onValue(() => { /* lazy */ });
 
   const $Cubism = (settings) => {
@@ -17,6 +19,7 @@ module.exports = (() => {
       $container: settings.$container,
       instances: settings.instances,
       plugins: settings.plugins,
+      resource: settings.resource,
       s_requestUnload: settings.s_requestUnload,
       s_plugins: settings.s_plugins,
       b_plugins: settings.b_plugins,
@@ -29,7 +32,7 @@ module.exports = (() => {
 
   $Cubism.init = (state) => {
     state.$container.show();
-    const deploymentsNumber = $Cubism.getDeploymentsNumberFromInstances(state.instances, state.plugins);
+    const deploymentsNumber = $Cubism.getDeploymentsNumberFromInstances(state.resource, state.instances, state.plugins);
     const deploymentsToDraw = $Cubism.getDeploymentsToDraw(deploymentsNumber, state.instances, state.plugins, state.$container);
     $Cubism.drawDeployments(state, deploymentsToDraw);
 
@@ -39,7 +42,11 @@ module.exports = (() => {
     $Cubism.drawContexts(state, pluginsToDraw);
   };
 
-  $Cubism.getDeploymentsNumberFromInstances = (instances, plugins) => {
+  $Cubism.getDeploymentsNumberFromInstances = (resource, instances, plugins) => {
+    if(resource.type === "addon") {
+      return [DEFAULT_DEPLOYMENT_NUMBER];
+    }
+
     const instancesDeployNumbers = instances
       .map(instance => instance.deployNumber);
 
@@ -85,7 +92,7 @@ module.exports = (() => {
       const instance = _.find(state.instances, instance => instance.deployNumber === deployNumber);
       state.$container.prepend(Templates["Metrics.cubism-deploy-context"]({
         deployNumber: deployNumber,
-        commitId: instance.commit ?
+        commitId: instance && instance.commit ?
           instance.commit.substr(0, 8) :
           null,
         T: state.Translations,
@@ -119,22 +126,33 @@ module.exports = (() => {
       .size($context.width());
   };
 
+  $Cubism.getSubPlugins = (state, context, instance, plugin) => {
+    return _.map(plugin.getSubkeys(), subkey => {
+      return $Cubism.getPoints(state, context, instance, plugin, subkey);
+    });
+  };
+
   $Cubism.addContextData = (state, plugin, deployNumber, context, div) => {
+    let instancesPoints;
+
+    if(state.resource.type === "application") {
+      instancesPoints = _.chain(plugin.getInstances())
+        .filter(instance => instance.deployNumber === deployNumber)
+        .reduce((instances, instance) => {
+          return instances.concat($Cubism.getSubPlugins(state, context, instance, plugin));
+        }, [])
+        .value();
+    } else if(state.resource.type === "addon") {
+      instancesPoints = $Cubism.getSubPlugins(state, context, null, plugin);
+    } else {
+      throw new Error("Can't handle anything else than an application or addon");
+      return;
+    }
+
     div
       .selectAll(".horizon")
       .data(_.flatten(_.flatten(
-        [
-          _.chain(plugin.getInstances())
-            .filter(instance => instance.deployNumber === deployNumber)
-            .reduce((instances, instance) => {
-              const addSubPlugins = _.map(plugin.getSubkeys(), subkey => {
-                return $Cubism.getPoints(state, context, instance, plugin, subkey);
-              });
-
-              return instances.concat(addSubPlugins);
-            }, [])
-            .value()
-        ]
+        [ instancesPoints ]
       )))
       .enter()
       .append("div")
@@ -225,7 +243,15 @@ module.exports = (() => {
   };
 
   $Cubism.getPoints = (state, context, instance, plugin, subkey) => {
-    let graphName = `${instance.displayName}`;
+    let graphName;
+    if(state.resource.type === "application") {
+      graphName = `${instance.displayName}`;
+    } else if(state.resource.type === "addon") {
+      graphName = state.resource.id;
+    } else {
+      throw new Error("Can't handle anything else than an application or addon");
+      return;
+    }
 
     // If there is only one subkey, the plugin display name will just say the same thing
     // than the subkey one
@@ -241,12 +267,17 @@ module.exports = (() => {
     }
 
     const metrics = context.metric(function(start, stop, step, callback) {
-      if(plugin.getToBeDeletedDeployment(instance.deployNumber)){
+      if(state.resource.type === "application" && plugin.getToBeDeletedDeployment(instance.deployNumber)){
         $Cubism.removeContext(state, context, instance.deployNumber, plugin);
       }
 
-      const allPoints = plugin.getGts(instance.id, subkey.key);
-      const $context = $Cubism.getContextSelector(state, instance.deployNumber, plugin);
+      const instanceId = instance && instance.id;
+      const allPoints = plugin.getGts(state.resource.type, instanceId || null, subkey.key);
+      const instanceDeployNumber = state.resource.type === "application" ?
+        instance.deployNumber :
+        DEFAULT_DEPLOYMENT_NUMBER;
+
+      const $context = $Cubism.getContextSelector(state, instanceDeployNumber, plugin);
       if(!allPoints){
         // hide the context until we have points
         $context.hide();
