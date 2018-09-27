@@ -1,7 +1,7 @@
 module.exports = (() => {
   const _ = require("lodash");
   const defaultPlugins = require("../plugins/defaults.js");
-  const mongodbGlobalPlugins = ["mongodb_open_connections"];
+  const mongodbGlobalPlugins = ["mongodb_open_connections", "mongodb_queries"];
 
   return {
     global: [].concat(defaultPlugins.global).concat(mongodbGlobalPlugins),
