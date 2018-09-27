@@ -143,5 +143,12 @@ module.exports = (() => {;
     }
   }
 
+  plugins.mongodb_open_connections = {
+    id: "mongodb_open_connections",
+    serverDelay: 60e3,
+    key: "mongodb",
+    subkeys: [{ key: "open_connections" }]
+  };
+
   return plugins;
 })();
