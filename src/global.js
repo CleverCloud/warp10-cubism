@@ -77,7 +77,7 @@ module.exports = (() => {
 
     Bacon
       .mergeAll(s_firstPoints, s_warp10NoData.first())
-      .flatMapLatest(() => state.$Metrics.continuousFetch(state))
+      .flatMapLatest(() => state.$Metrics.continuousFetch(state, state.fetchInterval))
       .onValue(state.$Warp10.send);
 
     return {

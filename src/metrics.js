@@ -8,6 +8,8 @@ module.exports = (() => {
   const $Global = require("./global.js");
   const Time = require("./time.js");
 
+  const defaultFetchInterval = 10e3;
+
   const $Metrics = (settings) => {
     const state = {
       $container: settings.$container,
@@ -23,6 +25,7 @@ module.exports = (() => {
       b_inputEvents: settings.b_inputEvents,
       b_outputEvents: settings.b_outputEvents,
       Translations: settings.Translations || function(key) { return key },
+      fetchInterval: settings.fetchInterval || defaultFetchInterval,
     };
 
     state.b_plugins = new Bacon.Bus();
@@ -167,7 +170,7 @@ module.exports = (() => {
     });
   };
 
-  $Metrics.continuousFetch = (state, interval = 1e3) => {
+  $Metrics.continuousFetch = (state, interval = defaultFetchInterval) => {
     const s_stop = Bacon.mergeAll(state.s_requestUnload.first());
     return state.s_plugins
       .map(plugins => {
