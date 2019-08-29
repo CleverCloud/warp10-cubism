@@ -149,6 +149,11 @@ module.exports = (() => {
       return;
     }
 
+    let horizon = context.horizon();
+    if(plugin.formatters.formatValue) {
+      horizon = horizon.format(plugin.formatters.formatValue);
+    }
+
     div
       .selectAll(".horizon")
       .data(_.flatten(_.flatten(
@@ -157,7 +162,7 @@ module.exports = (() => {
       .enter()
       .append("div")
       .attr("class", "horizon")
-      .call(context.horizon());
+      .call(horizon);
   };
 
   $Cubism.drawAxis = (div, context) => {
