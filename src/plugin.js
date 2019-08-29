@@ -151,11 +151,13 @@ module.exports = (() => {
     const _key = this.getFullKey(this.key, this.subkeys);
 
     return `
-    "${this.token}"
-    '${_key}'
-    { ${lelems.join(' ')} }
-    ${rStart} ${rStop}
-    FETCH`;
+      [
+        "${this.token}"
+        '${_key}'
+        { ${lelems.join(' ')} }
+        ${rStart} ${rStop}
+      ]
+      FETCH`;
   };
 
   Plugin.prototype.getWarpscript = function(start, stop, includeInstances = true) {
