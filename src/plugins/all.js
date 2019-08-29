@@ -30,7 +30,6 @@ const _ = require("lodash");
 const cpu = require("./cpu.js");
 
 module.exports = (() => {;
-  const _ = require("lodash");
   let plugins = {};
 
   plugins = _.extend(plugins, cpu);
