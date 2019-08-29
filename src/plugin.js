@@ -114,7 +114,7 @@ module.exports = (() => {
     if(instances.length === 0){
       return "";
     } else if(instances.length === 1){
-      return `=${_.first(instances).id}`;
+      return `${_.first(instances).id}`;
     } else{
       const instancesIds = _.map(instances, 'id').join('|');
       return `~(${instancesIds})`;
@@ -132,7 +132,7 @@ module.exports = (() => {
     }
 
     let labels = _.extend({}, _.clone(this.labels), {
-      'app_id': `=${this.resource_id}`
+      'app_id': `${this.resource_id}`
     });
 
     if(includeInstances && this.instances.length > 0) {
