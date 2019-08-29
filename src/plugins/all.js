@@ -39,9 +39,9 @@ module.exports = (() => {;
     id: "mem",
     serverDelay: 10e3,
     key: "mem",
-    subkeys: [{key: "used"}],
+    subkeys: [{key: "used_percent"}],
     formatters: {
-      formatValue: formatValues.formatBytes
+      formatValue: formatValues.formatPercent
     }
   };
 
