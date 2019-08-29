@@ -20,7 +20,13 @@ const formatBytes = (value) => {
 
 const formatSeconds = (value) => `${value.toString()}/s`;
 
+const formatPercent = (value) => {
+  const round = Math.round(parseFloat(value));
+  return `${round.toString()}%`;
+};
+
 module.exports = {
   formatBytes,
-  formatSeconds
-}
+  formatSeconds,
+  formatPercent,
+};
