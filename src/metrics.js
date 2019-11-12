@@ -276,7 +276,7 @@ module.exports = (() => {
 
   $Metrics.setMaxPoints = (state) => {
     return _.extend({}, state, {
-      maxPoints: state.$container.find(".card-container").width()
+      maxPoints: state.$container.find(".metrics-container").width()
     });
   };
 
