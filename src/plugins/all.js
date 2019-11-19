@@ -157,5 +157,12 @@ module.exports = (() => {;
       { key: "commands_per_sec" }]
   };
 
+  plugins.elasticsearch_status_code = {
+    id: "elasticsearch_status_code",
+    serverDelay: 60e3,
+    key: "elasticsearch_cluster_health",
+    subkeys: [{ key: "status_code" }]
+  };
+
   return plugins;
 })();
