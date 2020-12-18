@@ -4,7 +4,7 @@ module.exports = (() => {
   const esGlobalPlugins = ["elasticsearch_status_code"];
 
   return {
-    global: [].concat(defaultPlugins.global).concat(esGlobalPlugins),
+    global: [].concat(defaultPlugins.globalAddons).concat(esGlobalPlugins),
     advanced: [].concat(defaultPlugins.advanced)
   };
 })();

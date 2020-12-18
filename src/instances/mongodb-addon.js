@@ -4,7 +4,7 @@ module.exports = (() => {
   const mongodbGlobalPlugins = ["mongodb_open_connections", "mongodb_queries"];
 
   return {
-    global: [].concat(defaultPlugins.global).concat(mongodbGlobalPlugins),
+    global: [].concat(defaultPlugins.globalAddons).concat(mongodbGlobalPlugins),
     advanced: [].concat(defaultPlugins.advanced)
   };
 })();
