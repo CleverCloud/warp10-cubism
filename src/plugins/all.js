@@ -44,6 +44,16 @@ module.exports = (() => {;
     }
   };
 
+  plugins.disk = {
+    id: "disk",
+    serverDelay: 60e3,
+    key: "disk",
+    subkeys: [{key: "used_percent"}],
+    formatters: {
+      formatValue: formatValues.formatPercent
+    }
+  };
+
   plugins.net = {
     id: "net",
     serverDelay: 60e3,

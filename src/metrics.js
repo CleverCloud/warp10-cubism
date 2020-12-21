@@ -65,10 +65,17 @@ module.exports = (() => {
     return Bacon.combineWith((token, instances) => {
       try{
         return _.map(plugins, conf => {
+          let labels = {};
+
+          if(state.resource.type === "addon" && conf.id === "disk") {
+            labels["device"] = "vdb";
+          }
+
           const pluginConfiguration = _.extend({}, conf, {
             resource_id: state.resource.id,
             token,
             instances,
+            labels,
             Translations: state.Translations
           });
 
