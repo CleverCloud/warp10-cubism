@@ -1,7 +1,7 @@
 module.exports = (() => {
   const _ = require("lodash");
   const $ = require("jquery");
-  const cubism = require("cubism");
+  const cubism = require("@clevercloud/cubism");
   const d3 = require("d3");
   const pageVisibility = require("./page-visibility.js");
 
