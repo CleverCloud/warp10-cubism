@@ -1,6 +1,6 @@
 {
-  "name": "warp10-cubism",
-  "version": "3.5.0",
+  "name": "@clevercloud/warp10-cubism",
+  "version": "4.0.0",
   "description": "",
   "main": "src/metrics.js",
   "scripts": {
