@@ -15,7 +15,7 @@
     "grunt-contrib-less": "^1.4.1"
   },
   "dependencies": {
-    "@clevercloud/cubism": "https://github.com/CleverCloud/cubism.git#2.0.0",
+    "@clevercloud/cubism": "2.0.0",
     "baconjs": "0.7.94",
     "d3": "3.x",
     "jquery": "^3.3.1",
