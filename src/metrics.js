@@ -26,6 +26,7 @@ module.exports = (() => {
       b_outputEvents: settings.b_outputEvents,
       Translations: settings.Translations || function(key) { return key },
       fetchInterval: settings.fetchInterval || defaultFetchInterval,
+      warp10Host: settings.warp10Host,
     };
 
     state.b_plugins = new Bacon.Bus();
@@ -93,7 +94,7 @@ module.exports = (() => {
   });
 
   $Metrics.openWebsocket = (state) => {
-    const mobiusUrl = `${Console.configuration.WSS_WARP10_HOST}/mobius`;
+    const mobiusUrl = state.warp10Host.replace('https://', 'wss://') + '/api/v0/mobius';
     const s_warp10 = $Warp10.websocket(mobiusUrl);
     const s_end = s_warp10.filter(false).mapEnd();
 
